@@ -54,7 +54,9 @@ spec:
           - name: KUBECTL_VERSION
             value: "1.26.11"
           - name: ACTOOLKIT_VERSION
-            value: "3.0.0a1"
+            value: "3.0.0a5"
+          - name: IGNORE_NAMESPACES
+            value: "astra-connector-operator,gmp-public,gmp-system,kube-node-lease,kube-public,kube-system,neptune-system,trident"
         command: ["/bin/sh"]
         args:
         - -c
@@ -64,5 +66,6 @@ spec:
           python3 -m pip install actoolkit==$ACTOOLKIT_VERSION &&
           curl -sLO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl &&
           mv kubectl /usr/bin/kubectl &&
+          curl -sLO https://raw.githubusercontent.com/MichaelHaigh/astra-fullcluster-backup/main/protectCluster.py &&
           chmod +x /usr/bin/kubectl &&
           trap : TERM INT; sleep infinity & wait

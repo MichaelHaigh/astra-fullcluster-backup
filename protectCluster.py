@@ -18,27 +18,37 @@
 import os
 
 import astraSDK
+import toolkit
 
 
 def get_cluster_namespaces(ignore_namespaces):
+    """Return a list of non-system namespaces on the cluster"""
     namespaces = astraSDK.k8s.getNamespaces().main(systemNS=ignore_namespaces)
     return [x["metadata"]["name"] for x in namespaces["items"]]
 
 
 def get_astra_namespaces():
-    apps = astraSDK.k8s.getResources().main(
+    """Return a list of namespaces already protected by Astra"""
+    return_list = []
+    for app in astraSDK.k8s.getResources().main(
         "applications", version="v1alpha1", group="management.astra.netapp.io"
-    )
-    return [n["namespace"] for n in [a for a in apps["items"]]["spec"]["includedNamespaces"]]
+    )["items"]:
+        return_list += [ns["namespace"] for ns in app["spec"]["includedNamespaces"]]
+    return return_list
+
+
+def protect_namespace(namespace):
+    print(f"--> managing namespace {namespace}")
+    toolkit.main(argv=f"-n -f manage app {namespace} {namespace}".split())
 
 
 def main():
     ignore_namespaces = os.environ.get("IGNORE_NAMESPACES").split(",")
     cluster_namespaces = get_cluster_namespaces(ignore_namespaces)
     astra_namespaces = get_astra_namespaces()
-    print(ignore_namespaces)
-    print(cluster_namespaces)
-    print(astra_namespaces)
+
+    for namespace in set(cluster_namespaces) - set(astra_namespaces):
+        protect_namespace(namespace)
 
 
 if __name__ == "__main__":
