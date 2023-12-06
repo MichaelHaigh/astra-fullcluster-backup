@@ -54,7 +54,7 @@ spec:
           - name: KUBECTL_VERSION
             value: "1.26.11"
           - name: ACTOOLKIT_VERSION
-            value: "3.0.0a5"
+            value: "3.0.0a6"
           - name: IGNORE_NAMESPACES
             value: "astra-connector-operator,gmp-public,gmp-system,kube-node-lease,kube-public,kube-system,neptune-system,trident"
         command: ["/bin/sh"]

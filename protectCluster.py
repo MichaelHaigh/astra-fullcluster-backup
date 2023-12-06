@@ -38,11 +38,15 @@ def get_astra_namespaces():
 
 
 def protect_namespace(namespace):
+    """Manage an app named {namespace} in namespace {namespace} via a toolkit command
+    which generates and creates the necessary custom resource"""
     print(f"--> managing namespace {namespace}")
     toolkit.main(argv=f"-n -f manage app {namespace} {namespace}".split())
 
 
 def main():
+    """Find all namespaces which aren't part of the IGNORE_NAMESPACES env variable,
+    and which are not currently managed, and then manage them."""
     ignore_namespaces = os.environ.get("IGNORE_NAMESPACES").split(",")
     cluster_namespaces = get_cluster_namespaces(ignore_namespaces)
     astra_namespaces = get_astra_namespaces()
