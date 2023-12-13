@@ -49,10 +49,8 @@ spec:
       serviceAccountName: astra-fullbackup
       containers:
       - name: alpine-astra-backup
-        image: alpine:latest
+        image: python:3.10.13-alpine3.19
         env:
-          - name: KUBECTL_VERSION
-            value: "1.26.11"
           - name: ACTOOLKIT_VERSION
             value: "3.0.0a6"
           - name: IGNORE_NAMESPACES
@@ -61,11 +59,8 @@ spec:
         args:
         - -c
         - >
-          apk add py3-pip curl &&
-          python3 -m pip install --upgrade pip &&
-          python3 -m pip install actoolkit==$ACTOOLKIT_VERSION &&
-          curl -sLO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl &&
-          mv kubectl /usr/bin/kubectl &&
+          apk add curl &&
+          pip install --upgrade pip &&
+          pip install actoolkit==$ACTOOLKIT_VERSION &&
           curl -sLO https://raw.githubusercontent.com/MichaelHaigh/astra-fullcluster-backup/main/protectCluster.py &&
-          chmod +x /usr/bin/kubectl &&
           trap : TERM INT; sleep infinity & wait
